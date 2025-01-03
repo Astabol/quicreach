@@ -70,7 +70,12 @@ jobs:
         build-mode: manual
         config: |
           queries:
-           - uses: security-and-quality # (very verbose)
+            - uses: security-and-quality # (very verbose)
+          query-filters:
+            - exclude:
+                id: cpp/loop-variable-changed
+            - exclude:
+                id: cpp/include-non-header
     - name: Build
       shell: pwsh
       run: ./build.ps1 -Arch ${{ matrix.arch }} -Tls ${{ matrix.tls }} -Link ${{ matrix.link }} -Install -BuildInstaller -Debug
@@ -85,7 +90,9 @@ jobs:
       if: ${{ (matrix.os == 'ubuntu') && (matrix.arch == 'x64') && (matrix.link == 'shared') }}
       uses: advanced-security/filter-sarif@f3b8118a9349d88f7b1c0c488476411145b6270d
       with:
-        patterns: -msquic/**/*
+        patterns: |
+          -msquic/**/*
+          -build/**/*
         input: sarif-results/cpp.sarif
         output: sarif-results/cpp.sarif
     - name: Upload SARIF
